@@ -1,80 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Text Categorizer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Media Tracker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    .form-section, .media-list {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label, select, input {
+      display: block;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-8">
+<body>
+  <h1>Media Tracker</h1>
+  <div class="form-section">
+    <label for="mediaName">Media Name:</label>
+    <input type="text" id="mediaName" required>
 
-  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
-    <h1 class="text-2xl font-bold mb-4">Text Categorizer</h1>
+    <label for="type">Category:</label>
+    <select id="type">
+      <option value="Book">Book</option>
+      <option value="Show">Show</option>
+      <option value="Game">Game</option>
+    </select>
 
-    <!-- Form -->
-    <form id="entryForm" class="mb-6 space-y-4">
-      <div>
-        <label class="block text-sm font-medium">Text</label>
-        <input id="textInput" type="text" class="w-full border p-2 rounded" required>
-      </div>
+    <label for="subCategory">Sub-category:</label>
+    <input type="text" id="subCategory">
 
-      <div>
-        <label class="block text-sm font-medium">Categories (comma-separated)</label>
-        <input id="categoryInput" type="text" class="w-full border p-2 rounded" placeholder="e.g. News, Tech">
-      </div>
+    <label>
+      <input type="checkbox" id="isCompleted"> Marked as Read/Watched
+    </label>
 
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Entry</button>
-    </form>
+    <button onclick="addMedia()">Add to List</button>
+  </div>
 
-    <!-- Display Entries -->
-    <h2 class="text-xl font-semibold mb-2">Entries</h2>
-    <ul id="entryList" class="space-y-2">
-      <!-- Entries will appear here -->
-    </ul>
+  <div class="media-list">
+    <h2>Tracked Media</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Sub-category</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="mediaTableBody"></tbody>
+    </table>
   </div>
 
   <script>
-    const form = document.getElementById('entryForm');
-    const textInput = document.getElementById('textInput');
-    const categoryInput = document.getElementById('categoryInput');
-    const entryList = document.getElementById('entryList');
+    const mediaList = [];
 
-    let entries = [];
+    function addMedia() {
+      const name = document.getElementById("mediaName").value.trim();
+      const type = document.getElementById("type").value;
+      const sub = document.getElementById("subCategory").value.trim();
+      const done = document.getElementById("isCompleted").checked;
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+      if (!name) return alert("Please enter a name.");
 
-      const text = textInput.value.trim();
-      const categories = categoryInput.value
-        .split(',')
-        .map(cat => cat.trim())
-        .filter(cat => cat !== "");
+      mediaList.push({ name, type, sub, done });
+      renderTable();
 
-      if (text) {
-        const entry = { text, categories };
-        entries.push(entry);
-        renderEntries();
-        form.reset();
-      }
-    });
+      document.getElementById("mediaName").value = "";
+      document.getElementById("subCategory").value = "";
+      document.getElementById("isCompleted").checked = false;
+    }
 
-    function renderEntries() {
-      entryList.innerHTML = '';
-      entries.forEach((entry, index) => {
-        const li = document.createElement('li');
-        li.className = "border p-3 rounded shadow-sm bg-gray-50";
-
-        const catString = entry.categories.map(cat =>
-          `<span class="inline-block bg-green-100 text-green-800 px-2 py-0.5 text-xs rounded mr-1">${cat}</span>`
-        ).join('');
-
-        li.innerHTML = `
-          <div class="font-medium">${entry.text}</div>
-          <div class="mt-1">${catString}</div>
-        `;
-        entryList.appendChild(li);
+    function renderTable() {
+      const body = document.getElementById("mediaTableBody");
+      body.innerHTML = "";
+      mediaList.forEach(media => {
+        const row = `<tr>
+          <td>${media.name}</td>
+          <td>${media.type}</td>
+          <td>${media.sub}</td>
+          <td>${media.done ? "✅ Done" : "❌ Not Yet"}</td>
+        </tr>`;
+        body.innerHTML += row;
       });
     }
   </script>
-
 </body>
 </html>
