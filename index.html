@@ -7,102 +7,107 @@
   <style>
     body {
       font-family: sans-serif;
+      max-width: 800px;
+      margin: auto;
       padding: 20px;
-      background-color: #f4f4f4;
     }
     h1 {
-      color: #333;
-    }
-    .form-section, .media-list {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
     }
     label, select, input {
       display: block;
-      margin-bottom: 10px;
+      margin: 10px 0;
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
     }
   </style>
 </head>
 <body>
   <h1>Media Tracker</h1>
-  <div class="form-section">
-    <label for="mediaName">Media Name:</label>
-    <input type="text" id="mediaName" required>
 
-    <label for="type">Category:</label>
-    <select id="type">
-      <option value="Book">Book</option>
-      <option value="Show">Show</option>
-      <option value="Game">Game</option>
-    </select>
+  <label for="name">Media Name:</label>
+  <input type="text" id="name" />
 
-    <label for="subCategory">Sub-category:</label>
-    <input type="text" id="subCategory">
+  <label for="category">Category:</label>
+  <select id="category">
+    <option value="show">Show</option>
+    <option value="read">Read</option>
+    <option value="game">Game</option>
+  </select>
 
-    <label>
-      <input type="checkbox" id="isCompleted"> Marked as Read/Watched
-    </label>
+  <label for="subcategory">Subcategory:</label>
+  <select id="subcategory"></select>
 
-    <button onclick="addMedia()">Add to List</button>
-  </div>
+  <label>
+    <input type="checkbox" id="completed" /> Completed
+  </label>
 
-  <div class="media-list">
-    <h2>Tracked Media</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Sub-category</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="mediaTableBody"></tbody>
-    </table>
-  </div>
+  <button onclick="addMedia()">Add Media</button>
+
+  <table id="media-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Subcategory</th>
+        <th>Completed</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    const mediaList = [];
+    const subcategories = {
+      show: ['Movie', 'Anime', 'TV Show'],
+      read: ['Book', 'Manga', 'Light Novel'],
+      game: []
+    };
 
-    function addMedia() {
-      const name = document.getElementById("mediaName").value.trim();
-      const type = document.getElementById("type").value;
-      const sub = document.getElementById("subCategory").value.trim();
-      const done = document.getElementById("isCompleted").checked;
+    const categorySelect = document.getElementById('category');
+    const subcategorySelect = document.getElementById('subcategory');
 
-      if (!name) return alert("Please enter a name.");
+    function updateSubcategories() {
+      const selectedCategory = categorySelect.value;
+      const options = subcategories[selectedCategory] || [];
 
-      mediaList.push({ name, type, sub, done });
-      renderTable();
-
-      document.getElementById("mediaName").value = "";
-      document.getElementById("subCategory").value = "";
-      document.getElementById("isCompleted").checked = false;
+      subcategorySelect.innerHTML = '';
+      options.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value = option.toLowerCase();
+        opt.textContent = option;
+        subcategorySelect.appendChild(opt);
+      });
     }
 
-    function renderTable() {
-      const body = document.getElementById("mediaTableBody");
-      body.innerHTML = "";
-      mediaList.forEach(media => {
-        const row = `<tr>
-          <td>${media.name}</td>
-          <td>${media.type}</td>
-          <td>${media.sub}</td>
-          <td>${media.done ? "✅ Done" : "❌ Not Yet"}</td>
-        </tr>`;
-        body.innerHTML += row;
-      });
+    categorySelect.addEventListener('change', updateSubcategories);
+    window.onload = updateSubcategories;
+
+    function addMedia() {
+      const name = document.getElementById('name').value;
+      const category = categorySelect.value;
+      const subcategory = subcategorySelect.value;
+      const completed = document.getElementById('completed').checked;
+
+      const table = document.getElementById('media-table').querySelector('tbody');
+      const row = table.insertRow();
+      row.insertCell(0).textContent = name;
+      row.insertCell(1).textContent = category;
+      row.insertCell(2).textContent = subcategory;
+      row.insertCell(3).textContent = completed ? 'Yes' : 'No';
+
+      document.getElementById('name').value = '';
+      document.getElementById('completed').checked = false;
     }
   </script>
 </body>
