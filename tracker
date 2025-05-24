@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Categorizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-4">Text Categorizer</h1>
+
+    <!-- Form -->
+    <form id="entryForm" class="mb-6 space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Text</label>
+        <input id="textInput" type="text" class="w-full border p-2 rounded" required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Categories (comma-separated)</label>
+        <input id="categoryInput" type="text" class="w-full border p-2 rounded" placeholder="e.g. News, Tech">
+      </div>
+
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Entry</button>
+    </form>
+
+    <!-- Display Entries -->
+    <h2 class="text-xl font-semibold mb-2">Entries</h2>
+    <ul id="entryList" class="space-y-2">
+      <!-- Entries will appear here -->
+    </ul>
+  </div>
+
+  <script>
+    const form = document.getElementById('entryForm');
+    const textInput = document.getElementById('textInput');
+    const categoryInput = document.getElementById('categoryInput');
+    const entryList = document.getElementById('entryList');
+
+    let entries = [];
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const text = textInput.value.trim();
+      const categories = categoryInput.value
+        .split(',')
+        .map(cat => cat.trim())
+        .filter(cat => cat !== "");
+
+      if (text) {
+        const entry = { text, categories };
+        entries.push(entry);
+        renderEntries();
+        form.reset();
+      }
+    });
+
+    function renderEntries() {
+      entryList.innerHTML = '';
+      entries.forEach((entry, index) => {
+        const li = document.createElement('li');
+        li.className = "border p-3 rounded shadow-sm bg-gray-50";
+
+        const catString = entry.categories.map(cat =>
+          `<span class="inline-block bg-green-100 text-green-800 px-2 py-0.5 text-xs rounded mr-1">${cat}</span>`
+        ).join('');
+
+        li.innerHTML = `
+          <div class="font-medium">${entry.text}</div>
+          <div class="mt-1">${catString}</div>
+        `;
+        entryList.appendChild(li);
+      });
+    }
+  </script>
+
+</body>
+</html>
